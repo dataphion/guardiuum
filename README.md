@@ -2,7 +2,7 @@
 
 ## What is Guardiuum?
 
-	Guardiuum is a centralised Data Governance solution, support on-premise as well as cloud agnostic. In the era of data-driven decision-making, Guardiuum emerges as a pivotal tool for enterprises aiming to harness the power of their data securely and efficiently. Guardiuum is a comprehensive data governance platform that serves as the backbone for managing your organization's data landscape. With its robust connectors, Guardiuum integrates seamlessly with various platforms, offering a unified view of schemas, namespaces, tables, and columns.
+Guardiuum is a centralised Data Governance solution, support on-premise as well as cloud agnostic. In the era of data-driven decision-making, Guardiuum emerges as a pivotal tool for enterprises aiming to harness the power of their data securely and efficiently. Guardiuum is a comprehensive data governance platform that serves as the backbone for managing your organization's data landscape. With its robust connectors, Guardiuum integrates seamlessly with various platforms, offering a unified view of schemas, namespaces, tables, and columns.
 	
 
 ## Why Guardiuum?
