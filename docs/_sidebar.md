@@ -1,0 +1,8 @@
+* [Home](/)
+* [Getting Started](installation_guide.md)
+* [Risks of not using Data Governance](why_guardiuum.md)
+* [Guardiuum Features](features.md)
+* [Architecture](architecture.md)
+* [User Guide](user_guide.md)
+* [Security and Policy Configuration](coming_soon.md)
+* [Feedback & Support](coming_soon.md)

@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  guardiuum-frontend:
+    image: guardiuum.azurecr.io/frontend:0.0.2
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_META_HOST_URL: "https://guardiuum.dataphion.com/api"
+      REACT_APP_STRAPI_HOST_URL: "http://localhost:1337/api"
+      REACT_APP_OPENMETADATA_TOKEN:  "eyJraWQiOiJHYjM4OWEtOWY3Ni1nZGpzLWE5MmotMDI0MmJrOTQzNTYiLCJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJvcGVuLW1ldGFkYXRhLm9yZyIsInN1YiI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBvcGVubWV0YWRhdGEub3JnIiwiaXNCb3QiOmZhbHNlLCJ0b2tlblR5cGUiOiJQRVJTT05BTF9BQ0NFU1MiLCJpYXQiOjE3MDk3MTk1MjMsImV4cCI6bnVsbH0.AeFMpg1hVmGmTXdzOKhMGMqXQwhOK-ydN3Xg94wmHtu3oKA0FYQbKAGhL3YTLGOO562tsiAYKxrv3nVbKxRzVcKQ10mzEAn_CyT6L4lSx6SYCHCmRkHdCWqMpu9V1yMUOUA_5Ww_wBqqdPk8DW_ePI35IXZb-r9QEj9nfhy4FpA9k2tzRxpLdcZW371HzxgwetQR-G6apKQjlF06vEp7eY4yIkNcXX-7kMnKnYAl0-Ou9hZM-rDt89qTsJ4ixpfwr_CEUR3q28YYpzRks5vaccuguYclqJ1ImnYwJt87cDVNDWEiPmygKE4_ZCwogoeTo9rctImNs5glWOjm9vGkXw"
+    depends_on:
+      guardium-api:
+        condition: service_healthy
+        
+  guardium-api:
+    image: guardiuum.azurecr.io/api_service:0.0.2_2
+    ports:
+      - "1337:1337"
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "1337"
+      DATABASE_CLIENT: "sqlite"
+      DATABASE_FILENAME: ".tmp/data.db"
+      DATABASE_HOST: ""
+      DATABASE_PORT: ""
+      DATABASE_NAME: ""
+      DATABASE_USERNAME: ""
+      DATABASE_PASSWORD: ""
+      DATABASE_SSL: "false"
+      OPENMETADATA_USERNAME: "admin"
+      OPENMETADATA_PASSWORD: "admin"
+      OPENMETADATA_URL: "https://guardiuum.dataphion.com"
+    healthcheck:
+      test: curl -f http://localhost:1337
+      # interval: 10s
+      # timeout: 5s
+      # retries: 5
+
+  AsynchronousSocketServer:
+    image: guardiuum.azurecr.io/guardiuum_psqlserver:0.0.2
+    ports:
+      - "5433:5433"
+    environment:
+      #proxy-server URL
+      API_URL: "http://policy-server:8088/api/v1/execute"
+      #Strapi URL
+      STRAPI_URL: "http://guardium-api:1337/api/db-connection-details"
+      #Query History URL
+      QH_URL: "http://guardium-api:1337/api/histories"
+      #Login URL
+      AUTH_URL: "http://guardium-api:1337/api/auth/local"
+      IDENTIFIER: "bhagavanth.h@dataphion.com"
+      USER_PASS: "Admin@123"
+      #Port for postgres
+      PORT: "5433"
+      #Socket.io URL
+      SOCKET_IO: https://guardium-api:1337
+      #Open Metadata URL's
+      dsUrl: "https://guardiuum.dataphion.com/api/v1/services/databaseServices"
+      TableURL: "https://guardiuum.dataphion.com/api/v1/tables?databaseSchema="
+      ColURL: "https://guardiuum.dataphion.com/api/v1/tables/name/"
+      SchemaURL:  "https://guardiuum.dataphion.com/api/v1/databaseSchemas?database="
+      #Open Metadata Token
+      authToken: "eyJraWQiOiJHYjM4OWEtOWY3Ni1nZGpzLWE5MmotMDI0MmJrOTQzNTYiLCJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJvcGVuLW1ldGFkYXRhLm9yZyIsInN1YiI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBvcGVubWV0YWRhdGEub3JnIiwiaXNCb3QiOmZhbHNlLCJ0b2tlblR5cGUiOiJQRVJTT05BTF9BQ0NFU1MiLCJpYXQiOjE3MDk3MTk1MjMsImV4cCI6bnVsbH0.AeFMpg1hVmGmTXdzOKhMGMqXQwhOK-ydN3Xg94wmHtu3oKA0FYQbKAGhL3YTLGOO562tsiAYKxrv3nVbKxRzVcKQ10mzEAn_CyT6L4lSx6SYCHCmRkHdCWqMpu9V1yMUOUA_5Ww_wBqqdPk8DW_ePI35IXZb-r9QEj9nfhy4FpA9k2tzRxpLdcZW371HzxgwetQR-G6apKQjlF06vEp7eY4yIkNcXX-7kMnKnYAl0-Ou9hZM-rDt89qTsJ4ixpfwr_CEUR3q28YYpzRks5vaccuguYclqJ1ImnYwJt87cDVNDWEiPmygKE4_ZCwogoeTo9rctImNs5glWOjm9vGkXw"
+    depends_on:
+      guardium-api:
+        condition: service_healthy      
+
+  policy-server:
+    image: guardiuum.azurecr.io/guardiuum_policy_service:0.0.2
+    ports:
+      - "8088:8088"
+    environment:
+      HOST: "guardium-api:1337"
+      SCHEME: "http"
+      BASE_URL: "api"
+      #open metadata URL
+      OMD_URL: "http://122.166.179.60:9085/api/v1/tables/name/"
+      MASTER: "bhagavanth.h@dataphion.com"
+      MPWD: "Admin@123"
+    depends_on:
+      guardium-api:
+        condition: service_healthy
