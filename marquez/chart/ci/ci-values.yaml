@@ -1,4 +1,0 @@
-## These value overrides are used within the GitHub Actions CI validation.
-##
-postgresql:
-  enabled: true
